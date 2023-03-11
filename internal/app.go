@@ -51,12 +51,14 @@ func (a *Application) Run() error {
 
 	wg.Add(1)
 	go func() {
+		a.log.Print("started syslog thread")
 		defer wg.Done()
 		incomming.Run(outputChannel)
 	}()
 
 	wg.Add(1)
 	go func() {
+		a.log.Print("started HTTP-server thread")
 		defer wg.Done()
 		httpServer.Run()
 	}()
