@@ -40,6 +40,11 @@ func (a *Application) Run() error {
 		return err
 	}
 
+	httpServer, err := NewHttpServer(a.log, a.HttpPort)
+	if err != nil {
+		return err
+	}
+
 	outputChannel := make(chan SyslogMessage, a.SyslogQueueSize)
 
 	var wg sync.WaitGroup
@@ -48,6 +53,12 @@ func (a *Application) Run() error {
 	go func() {
 		defer wg.Done()
 		incomming.Run(outputChannel)
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		httpServer.Run()
 	}()
 
 	for v := range outputChannel {
