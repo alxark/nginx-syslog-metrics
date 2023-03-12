@@ -109,6 +109,10 @@ func (a *Application) Run() error {
 		}
 	}()
 
+	for _ = range nginxMessages {
+		continue
+	}
+
 	a.log.Print("waiting for subroutines to complete")
 	wg.Wait()
 
