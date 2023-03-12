@@ -14,6 +14,7 @@ func TestCategoriserProcessing(t *testing.T) {
 
 	ctg, err := NewCategoriser(log.Default(), []CategoriserConfig{
 		{SourceRegexp: "/v1/auth/(sign-in|sign-out|login).*", Target: "/v1/auth/$1"},
+		{SourceRegexp: "/v2/([a-zA-Z0-9]+)/([a-zA-Z0-9]+).*", Target: "/v2/$1/$2"},
 	})
 
 	t.Log("categoriser initialized")
@@ -38,8 +39,9 @@ func TestCategoriserProcessing(t *testing.T) {
 	}()
 
 	testMap := map[string]string{
-		"/v1/auth/sign-in/auth": "/v1/auth/sign-in",
-		"/v2/some":              "other",
+		"/v1/auth/sign-in/auth":     "/v1/auth/sign-in",
+		"/v2/testing/test/some/url": "/v2/testing/test",
+		"/v2/some":                  "other",
 	}
 
 	for k, v := range testMap {
