@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log"
 	"regexp"
 )
@@ -23,11 +24,19 @@ func NewCategoriser(log *log.Logger, config []CategoriserConfig) (cr *Categorise
 	}
 
 	for _, v := range config {
+		if v.SourceRegexp == "" || v.Target == "" {
+			return cr, errors.New("failed to compiled regexp, it's empty")
+		}
+
 		cr.cfg = append(cr.cfg, compiledRegexp{
 			source: regexp.MustCompile(v.SourceRegexp),
 			target: v.Target,
 		})
+
+		cr.log.Printf("compiled category: %s", v.SourceRegexp)
 	}
+
+	cr.log.Printf("total categories compiled: %d", len(cr.cfg))
 
 	return cr, nil
 }
