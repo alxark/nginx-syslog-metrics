@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	_ "github.com/prometheus/client_golang/prometheus"
@@ -65,22 +64,12 @@ func (r *Receiver) Run(outputChannel chan SyslogMessage) (err error) {
 
 	for m := range channel {
 		receiverMetric.WithLabelValues("received").Inc()
-		var content map[string]string
 
-		if err = json.Unmarshal([]byte(m["content"].(string)), &content); err != nil {
-			r.log.Printf("failed to decode syslog content: %s", err.Error())
-			receiverMetric.WithLabelValues("broken").Inc()
-			continue
-		}
-
-		sMsg := SyslogMessage{
+		outputChannel <- SyslogMessage{
 			Time:    m["timestamp"].(time.Time),
 			Host:    m["hostname"].(string),
-			Message: content,
+			Message: m["content"].(string),
 		}
-
-		receiverMetric.WithLabelValues("sent").Inc()
-		outputChannel <- sMsg
 	}
 
 	return nil
