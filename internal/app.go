@@ -76,6 +76,11 @@ func (a *Application) Run() error {
 		return err
 	}
 
+	counter, err := NewCounter(a.log, a.Prefix)
+	if err != nil {
+		return err
+	}
+
 	syslogMessages := make(chan SyslogMessage, a.QueueSize)
 	nginxMessages := make(chan NginxEvent, a.QueueSize)
 
@@ -109,9 +114,15 @@ func (a *Application) Run() error {
 		}
 	}()
 
-	for _ = range nginxMessages {
-		continue
-	}
+	wg.Add(1)
+	go func() {
+		a.log.Print("starting counter for metrics")
+		defer wg.Done()
+
+		if err := counter.Run(ctx, nginxMessages); err != nil {
+			a.log.Fatalf("failed to count events, got %s", err.Error())
+		}
+	}()
 
 	a.log.Print("waiting for subroutines to complete")
 	wg.Wait()
