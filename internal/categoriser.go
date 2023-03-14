@@ -57,6 +57,7 @@ func (cr *Categoriser) Run(ctx context.Context, input chan SyslogMessage, output
 				}
 
 				ne.Category = v.source.ReplaceAllString(ne.Request, v.target)
+				break
 			}
 
 			if ne.Category == "" {
