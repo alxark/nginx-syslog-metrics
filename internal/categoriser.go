@@ -51,6 +51,8 @@ func (cr *Categoriser) Run(ctx context.Context, input chan SyslogMessage, output
 				continue
 			}
 
+			ne.Frontend = msg.Host
+
 			for _, v := range cr.cfg {
 				if !v.source.MatchString(ne.Request) {
 					continue

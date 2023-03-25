@@ -11,6 +11,7 @@ type SyslogMessage struct {
 type NginxEvent struct {
 	Mode                   string // access / error logs
 	Category               string // nginx event category
+	Frontend               string
 	RequestId              string `json:"request_id"`
 	RequestLength          string `json:"request_length"`
 	RemoteAddr             string `json:"request_addr"`
@@ -27,7 +28,7 @@ type NginxEvent struct {
 	ServerName             string `json:"server_name"`
 	Scheme                 string `json:"scheme"`
 	RequestTime            string `json:"request_time"`
-	Upstream               string `json:"upstream"`
+	UpstreamAddr           string `json:"upstream_addr"`
 	UpstreamResponseTime   string `json:"upstream_response_time"`
 	UpstreamResponseLength string `json:"upstream_response_length"`
 }
